@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="block">
+
+
+<link name="christmas tree">
+  <self_collide> true </self_collide>
+  <visual>
+    <origin xyz="0.05 -0.35 0" rpy="0 0 110"/>
+    <geometry>
+      <mesh scale = "0.0009 0.0009 0.0009" filename = "package://ur_description/meshes/christmas_tree/tree_model.dae"/>
+    </geometry>
+    <material name="orange"/>
+  </visual>
+
+
+
+  <inertial>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+   <mass value="0.0225" />
+   <inertia
+      ixx="0.00000379215" ixy="0.0"  ixz="0.0"
+      iyy="0.00000379215" iyz="0.0"  izz="0.00000379215" />
+  </inertial>
+
+</link>
+
+<gazebo reference="christmas tree">
+  <mu1>100</mu1>
+  <mu2>100</mu2>
+  <kp>2147483647</kp>
+  <kd>1</kd>
+  <maxVel>0</maxVel>
+  <minDepth>0.001</minDepth>
+  
+</gazebo>
+
+</robot>
