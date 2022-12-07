@@ -8,9 +8,7 @@ Use 'expm' for matrix exponential.
 Angles are in radian, distance are in meters.
 """
 def Get_MS():
-    # =================== Your code starts here ====================#
-    # Fill in the correct values for a1~6 and q1~6, as well as the M matrix
-
+ 
     w_1 = [0,0,1]
     w_2 = [0,1,0]
     w_3 = [0,1,0]
@@ -39,10 +37,9 @@ def Get_MS():
     S_5 = np.array([[0,-w_5[2], w_5[1], v_5[0]], [w_5[2], 0, -w_5[0], v_5[1]], [-w_5[1], w_5[0], 0, v_5[2]],[0,0,0,0]])
     S_6 = np.array([[0,-w_6[2], w_6[1], v_6[0]], [w_6[2], 0, -w_6[0], v_6[1]], [-w_6[1], w_6[0], 0, v_6[2]],[0,0,0,0]])
     
-    #print("S_1", S_1)
+    
     S = [S_1,S_2, S_3, S_4,S_5,S_6]
-    #print("S", S)
-    #print("S[0]", S[0])
+    
 
 
 
@@ -51,7 +48,7 @@ def Get_MS():
 
 
 
-    # ==============================================================#
+    
     return M, S
 
 
@@ -63,9 +60,7 @@ def lab_fk(theta1, theta2, theta3, theta4, theta5, theta6):
     # Initialize the return_value
     return_value = [None, None, None, None, None, None]
 
-    #print("Foward kinematics calculated:\n")
-
-    # =================== Your code starts here ====================#
+    
     theta = np.array([theta1,theta2,theta3,theta4,theta5,theta6])
     T = np.eye(4)
 
@@ -78,13 +73,6 @@ def lab_fk(theta1, theta2, theta3, theta4, theta5, theta6):
 
     T_1 = np.dot(t_4,expm(S[5]*theta[5]))
     T = T_1*M
-
-    #print(str(T) + "\n")
-
-
-
-
-    # ==============================================================#
 
     return_value[0] = theta1 + PI
     return_value[1] = theta2
@@ -100,7 +88,7 @@ def lab_fk(theta1, theta2, theta3, theta4, theta5, theta6):
 Function that calculates an elbow up Inverse Kinematic solution for the UR3
 """
 def lab_invk(xWgrip, yWgrip, zWgrip, yaw_WgripDegree):
-    # =================== Your code starts here ====================#
+    
     theta1 = 0.0
     theta2 = 0.0
     theta3 = 0.0
@@ -130,7 +118,7 @@ def lab_invk(xWgrip, yWgrip, zWgrip, yaw_WgripDegree):
     
     d1 = L2 - 10;
     r = np.sqrt(xcen**2+ycen**2)
-    #print(np.arctan2(ycen,xcen), np.arctan2(d1,np.sqrt(r**2-d1**2)))
+    
     theta1 = np.arctan2(ycen,xcen)-np.arctan2(d1,np.sqrt(r**2-d1**2))
     theta6 = PI/2 - theta_yaw + theta1
     
@@ -139,8 +127,7 @@ def lab_invk(xWgrip, yWgrip, zWgrip, yaw_WgripDegree):
     z3end = L10 + L8 + zcen
 
     Lm = np.sqrt((z3end-L1)**2+x3end**2+y3end**2)
-    print(Lm)
-    print((L3**2+L5**2-Lm**2)/(2*L3*L5))
+    
     theta3 = PI - np.arccos((L3**2+L5**2-Lm**2)/(2*L3*L5))
     
     theta2 = -np.arccos((L3**2+Lm**2-L5**2)/(2*L3*Lm))-np.arcsin((z3end-L1)/Lm)
@@ -148,9 +135,9 @@ def lab_invk(xWgrip, yWgrip, zWgrip, yaw_WgripDegree):
     theta4 = -theta3 - theta2
     theta5 = -PI/2
 
-    print(theta1, theta2, theta3, theta4, theta5, theta6)
+    
 
-    # ==============================================================#
+    
     return lab_fk(theta1, theta2, theta3, theta4, theta5, theta6)
 
 

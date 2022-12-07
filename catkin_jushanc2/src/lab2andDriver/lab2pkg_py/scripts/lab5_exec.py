@@ -12,22 +12,13 @@ from lab4_func import *
 from blob_search import *
 
 
-
-# ========================= Student's code starts here =========================
-
 # Position for UR3 not blocking the camera
 go_away = [270*PI/180.0, -90*PI/180.0, 90*PI/180.0, -90*PI/180.0, -90*PI/180.0, 135*PI/180.0]
 
-# Store world coordinates of blue and yellow blocks
-xw_yw_B = []
-xw_yw_Y = []
 
-# Any other global variable you want to define
-# Hints: where to put the blocks?
-destination_y = [[200.0,-150.0 ,32.0], [250.0, -150.0, 32.0]]
-destination_b = [[300.0, -150.0,32.0], [350.0,-150.0,32.0]]
+xw_yw = []
 
-# ========================= Student's code ends here ===========================
+
 
 ################ Pre-defined parameters and functions no need to change below ################
 
@@ -197,7 +188,6 @@ def move_block(pub_cmd, loop_rate, start_xw_yw_zw, target_xw_yw_zw, vel, accel, 
     pick and place a block
 
     """
-    # ========================= Student's code starts here =========================
 
     global go_away
     global digital_in_0
@@ -209,28 +199,24 @@ def move_block(pub_cmd, loop_rate, start_xw_yw_zw, target_xw_yw_zw, vel, accel, 
 
     end_x = target_xw_yw_zw[0]
     end_y = target_xw_yw_zw[1]
-    ### Hint: Use the Q array to map out your towers by location and "height".
-    start_block_pre = lab_invk(start_x, start_y, 34.0, 0)
-    end_block_pre = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    print(start_y-50)
-    if (h == 185.0):
-	end_block_pre = lab_invk(end_x+3, end_y-10.0, h, 0.0)
-    elif (h == 240.0):
-	end_block_pre = lab_invk(end_x+40, end_y+8, h, 0.0)
-    elif (h == 280.0):
-	end_block_pre = lab_invk(end_x+40, end_y+8, h, 0.0)
-    start_block = lab_invk(start_xw_yw_zw[0]-20, start_xw_yw_zw[1]-40, 34.0, 0)
-    end_block = lab_invk(target_xw_yw_zw[0], target_xw_yw_zw[1], 34.0, 0)
-    mid_pos = lab_invk(end_block_pre[0], end_block_pre[1], h, 0)
+    
+    start_block = lab_invk(start_x, start_y, 30.0, 0)
+    end_block = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    
+    if (h == 175.0):
+	end_block = lab_invk(end_x+90, end_y+35, h+10, 0.0)
+    elif (h == 135.0):
+	end_block = lab_invk(end_x+65, end_y+5.0, h, 0.0)
+    elif (h == 245.0):
+	end_block = lab_invk(end_x+108, end_y+70, h, 0.0)
+        
+
     
     
-    #Move to get ready 
-    move_arm(pub_cmd,loop_rate, start_block_pre,vel,accel)
-    #time.sleep(0.5)
-    # move to pick up the block
-    #move_arm(pub_cmd,loop_rate, start_block,vel,accel)
+    move_arm(pub_cmd,loop_rate, start_block,vel,accel)
     time.sleep(0.5)
-    print("hi")
+    
+    
     #Turn the gripper on
     suction = gripper(pub_cmd, loop_rate, suction_on)
     rospy.sleep(1.0)
@@ -245,22 +231,18 @@ def move_block(pub_cmd, loop_rate, start_xw_yw_zw, target_xw_yw_zw, vel, accel, 
     
 
         #Move to the location
-        move_arm(pub_cmd,loop_rate, mid_pos,vel,accel)
-        move_arm(pub_cmd, loop_rate, end_block_pre, vel, accel)
-        time.sleep(0.5)
-        #move_arm(pub_cmd, loop_rate, end_block, vel, accel)
-        #time.sleep(0.5)
+        move_arm(pub_cmd, loop_rate, end_block, vel, accel)
+        time.sleep(2.0)
+        
 
         #Turn suction off
         gripper(pub_cmd, loop_rate, suction_off)
-        time.sleep(0.5)
+        time.sleep(1.0)
 
-        #move_arm(pub_cmd,loop_rate, go_away ,vel,accel)
+       
 
 
     error = 0
-
-    # ========================= Student's code ends here ===========================
 
     return error
 
@@ -281,8 +263,8 @@ class ImageConverter:
 
     def image_callback(self, data):
 
-        global xw_yw_B # store found green blocks in this list
-        global xw_yw_Y # store found yellow blocks in this list
+        global xw_yw # store found green blocks in this list
+        
 
         try:
           # Convert ROS image to OpenCV image
@@ -293,23 +275,8 @@ class ImageConverter:
         cv_image = cv2.flip(raw_image, -1)
         cv2.line(cv_image, (0,50), (640,50), (0,0,0), 5)
 
-        # You will need to call blob_search() function to find centers of green blocks
-        # and yellow blocks, and store the centers in xw_yw_G & xw_yw_Y respectively.
-
-        # If no blocks are found for a particular color, you can return an empty list,
-        # to xw_yw_G or xw_yw_Y.
-
-        # Remember, xw_yw_G & xw_yw_Y are in global coordinates, which means you will
-        # do coordinate transformation in the blob_search() function, namely, from
-        # the image frame to the global world frame.
-
-        xw_yw_B = blob_search(cv_image, "yellow")
-        #xw_yw_Y = blob_search(cv_image, "yellow")
-
+        xw_yw = blob_search(cv_image, "yellow")
         
-        #print("yellow", xw_yw_Y)
-        #print("blue", xw_yw_B)
-
 def get_block_pos(path):
 	with open(path, 'r') as f:
             # Load the data as a dict
@@ -328,12 +295,10 @@ Program run from here
 def main():
 
     global go_away
-    global xw_yw_B
-    global xw_yw_Y
-
-    # global variable1
-    # global variable2
+    global xw_yw
     
+
+   
 
     # Initialize ROS node
     rospy.init_node('lab5node')
@@ -353,41 +318,43 @@ def main():
     # Initialize the rate to publish to ur3/command
     loop_rate = rospy.Rate(SPIN_RATE)
 
-    vel = 3
-    accel = 3
-    #move_arm(pub_command, loop_rate, go_away, vel, accel)
+    vel = 2.0
+    accel = 2.0
+    
     
 
     ic = ImageConverter(SPIN_RATE)
     time.sleep(5)
 
-    # ========================= Student's code starts here =========================
+    
 
     """
     Hints: use the found xw_yw_G, xw_yw_Y to move the blocks correspondingly. You will
     need to call move_block(pub_command, loop_rate, start_xw_yw_zw, target_xw_yw_zw, vel, accel)
     """
     
-
-    #Y1 = xw_yw_Y[0]
-    #Y2 = xw_yw_Y[1]
-    B1 = xw_yw_B[0]
+    
+    
     
     #Assign arbitrary positions to the ledges (from top to bottom)
-    ledge_1 = xw_yw_B[3]
-    ledge_2 = xw_yw_B[4]
-    ledge_3 = xw_yw_B[1]
-    ledge_4 = xw_yw_B[5]
-    ledge_5 = xw_yw_B[2]
-    ledge_6 = xw_yw_B[0]
-    print(ledge_1)
+    ledge_1 = xw_yw[3]
+    ledge_2 = xw_yw[4]
+    ledge_3 = xw_yw[1]
+    ledge_3_real = (ledge_3[0]-12, ledge_3[1])
+    ledge_4 = xw_yw[5]
+    ledge_4_real = (ledge_4[0]+33,ledge_4[1]+3)
+    ledge_5 = xw_yw[2]
+    ledge_5_real = (ledge_5[0]+2, ledge_5[1]+2)
+    ledge_6 = xw_yw[0]
+    ledge_6_real = (ledge_6[0]-2, ledge_6[1]-1)
+  
     
-    #B2 = xw_yw_B[1]
+   
 
     #Block Positions 
     path = "/home/ur3/catkin_jushanc2/src/lab2andDriver/lab2pkg_py/scripts/lab2_data.yaml"
     blocks = get_block_pos(path)
-    print(blocks)
+    
     
     green_1 = blocks[0][0]
     green_2 = blocks[1][0]
@@ -400,46 +367,30 @@ def main():
 
     
 
-    h_1 = 185.0
-    h_2 = 240.0
-    h_3 = 280.0
+    h_1 = 135.0
+    h_2 = 175.0
+    h_3 = 245.0
 
 
-    #move_block(pub_command,loop_rate, red_1, destination_y[0], vel,accel, 50.0)
-    #move_arm(pub_command,loop_rate, go_away,vel,accel)
-    #move_block(pub_command,loop_rate, red_2,destination_y[1],vel,accel, 50.0)
-    #move_block(pub_command,loop_rate, green_1,destination_b[0],vel,accel,50.0)
-    #move_block(pub_command,loop_rate, go_away,vel,accel)
-    #move_block(pub_command,loop_rate, green_2,destination_b[1],vel,accel,50.0)
-    #move_block(pub_command,loop_rate, go_away,vel,accel)
-    #move_block(pub_command,loop_rate, blue_1,red_1,vel,accel,50.0)
-    #move_block(pub_command,loop_rate, go_away,vel,accel)
-    #move_arm(pub_command,loop_rate, blue_2,red_2,vel,accel,50.0)
-    #move_block(pub_command,loop_rate, go_away,vel,accel)
+    
 
     #user_color = input("Which color ornament do you want to place <red, blue, green>:" )
     #user_block = input("Which ornament do you want to move <1,2,3 from left side>: ")
     
-    #pick_up
     
+    move_block(pub_command, loop_rate, red_1, ledge_6_real, vel, accel, h_1)
+    move_block(pub_command, loop_rate, red_2, ledge_5_real, vel, accel, h_1)
+    move_block(pub_command, loop_rate, blue_2, ledge_4_real, vel, accel, h_1)
+    move_block(pub_command, loop_rate, green_1, ledge_3_real, vel, accel, h_2)
+    move_block(pub_command, loop_rate, green_2, ledge_2, vel, accel, h_2)
+    move_block(pub_command, loop_rate, blue_1, ledge_1, vel, accel, h_3)
     
-    #move_block(pub_command, loop_rate, Y1, destination_b[0], vel, accel)
-    #move_block(pub_command, loop_rate, Y2, destination_b[1], vel, accel)
-    
-    print(ledge_6)
-    #move_block(pub_command, loop_rate, red_1, ledge_6, vel, accel, h_1)
-    #move_block(pub_command, loop_rate, red_2, ledge_5, vel, accel, h_1)
-    #move_block(pub_command, loop_rate, blue_1, ledge_2, vel, accel, h_2)
-    #move_block(pub_command, loop_rate, green_2, ledge_3, vel, accel, h_2)
-    move_block(pub_command, loop_rate, green_2, ledge_1, vel, accel, h_3)
-    
-    
-    #move_block(pub_command, loop_rate, B2, destination_y[1], vel, accel)
+  
 
 
    
 
-    # ========================= Student's code ends here ===========================
+    
 
     move_arm(pub_command, loop_rate, go_away, vel, accel)
     rospy.loginfo("Task Completed!")

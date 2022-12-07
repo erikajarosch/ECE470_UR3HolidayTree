@@ -5,7 +5,7 @@ import cv2
 from cv2 import cornerMinEigenVal
 import numpy as np
 
-# ========================= Student's code starts here =========================
+
 
 # Params for camera calibration
 r = 227
@@ -30,7 +30,7 @@ def IMG2W(col, row):
     x_y = np.dot(np.linalg.inv(R),(curr-np.array([tx,ty])))
    
     return (x_y[0]*1000.0, x_y[1]*1000.0)
-# ========================= Student's code ends here ===========================
+
 
 
 def blob_search(image_raw, color):
@@ -38,7 +38,7 @@ def blob_search(image_raw, color):
     # Setup SimpleBlobDetector parameters.
     params = cv2.SimpleBlobDetector_Params()
 
-    # ========================= Student's code starts here =========================
+    
 
     # Filter by Color
     params.filterByColor = False
@@ -58,7 +58,7 @@ def blob_search(image_raw, color):
     # Filter by Convexity
     params.filterByConvexity = False
 
-    # ========================= Student's code ends here ===========================
+    
 
     # Create a detector with the parameters
     detector = cv2.SimpleBlobDetector_create(params)
@@ -66,11 +66,7 @@ def blob_search(image_raw, color):
     # Convert the image into the HSV color space
     hsv_image = cv2.cvtColor(image_raw, cv2.COLOR_BGR2HSV)
 
-    # ========================= Student's code starts here =========================
-    r_l = 140
-    g_l = 50
-    b_l = 0
-
+    
     r_u = 165
     g_u = 80
     b_u = 60
@@ -86,14 +82,13 @@ def blob_search(image_raw, color):
         lower = (20,110,30)
         upper = (40,250,255)
 
-        #lower = (0,0,30)
-        #upper = (75,200,150)
+   
 
 
     # Define a mask using the lower and upper bounds of the target color
     mask_image = cv2.inRange(hsv_image, lower, upper)
 
-    # ========================= Student's code ends here ===========================
+    
 
     keypoints = detector.detect(mask_image)
     
@@ -104,14 +99,13 @@ def blob_search(image_raw, color):
     for i in range(num_blobs):
         blob_image_center.append((keypoints[i].pt[0], keypoints[i].pt[1]))
 
-    # ========================= Student's code starts here =========================
+    
     #print("blob center", blob_image_center[0])
     # Draw the keypoints on the detected block
     im_with_keypoints = cv2.drawKeypoints(image_raw, keypoints, 0)
 
     #print("blob center", IMG2W(blob_image_center[0], blob_image_center[1]))
-    # ========================= Student's code ends here ===========================
-
+    
     xw_yw = []
 
     if(num_blobs == 0):

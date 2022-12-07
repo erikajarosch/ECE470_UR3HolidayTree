@@ -22,6 +22,7 @@
       iyy="0.00000379215" iyz="0.0"  izz="0.00000379215" />
   </inertial>
 
+
 </link>
 
 <gazebo reference="christmas tree">
@@ -31,7 +32,7 @@
   <kd>1</kd>
   <maxVel>0</maxVel>
   <minDepth>0.001</minDepth>
-  
+  <gravity>0</gravity>
 </gazebo>
 
 </robot>
